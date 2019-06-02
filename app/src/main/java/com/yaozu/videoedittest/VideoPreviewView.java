@@ -6,9 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.opengl.GLES11Ext;
-import android.opengl.GLES20;
-import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.Surface;
@@ -62,6 +59,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         setPreserveEGLContextOnPause(false);
         setCameraDistance(100);
+        nativeInit();
 
         oesFilter = new OESFilter();
         blurFilter = new BlurFilter2();
@@ -88,6 +86,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             centerFilter.setVideoSize(videoWidth, videoHeight);
             showFilter.setVideoSize(videoWidth, videoHeight);
             waterFilter.setSize(screenWidth, screenHeight, videoWidth, videoHeight);
+            setVideoSize(videoWidth, videoHeight);
 
             mediaPlayer.setDataSource(paths);
             Surface surface = new Surface(surfaceTexture);
@@ -102,8 +101,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        onNativeCreate();
-        oesFilter.create(getContext());
+        /*oesFilter.create(getContext());
         blurFilter.create(getContext());
         centerFilter.create(getContext());
         showFilter.create(getContext());
@@ -120,20 +118,22 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
                 GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                 GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-        textureId = texture[0];
-        surfaceTexture = new SurfaceTexture(texture[0]);
+        textureId = texture[0];*/
+        String vertexShader = ShaderUtils.readRawTextFile(this.getContext(), R.raw.oes_vetext_sharder);
+        String fragmentShader = ShaderUtils.readRawTextFile(getContext(), R.raw.oes_fragment_sharder);
+        textureId = onNativeCreate(vertexShader, fragmentShader);
+        surfaceTexture = new SurfaceTexture(textureId);
         surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
             @Override
             public void onFrameAvailable(SurfaceTexture surfaceTexture) {
                 requestRender();
             }
         });
-        GLES30.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        onNativeSurfaceChanged(width,height);
+        onNativeSurfaceChanged(width, height);
         screenWidth = width;
         screenHeight = height;
         waterFilter.setSize(width, height);
@@ -145,12 +145,13 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        onNativeDraw();
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+        //GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         surfaceTexture.updateTexImage();
         surfaceTexture.getTransformMatrix(mSTMatrix);
+        setMSTMatrix(mSTMatrix);
+        onNativeDraw();
 
-        GLES20.glViewport(0, 0, screenWidth, screenHeight);
+        /*GLES20.glViewport(0, 0, screenWidth, screenHeight);
 
         oesFilter.setmSTMatrix(mSTMatrix);
         int nextTextureId = oesFilter.drawFrameBuffer(textureId);
@@ -162,7 +163,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         //nextTextureId = centerFilter.drawFrameBuffer(nextTextureId);
 
         showFilter.setmSTMatrix(mSTMatrix);
-        showFilter.drawFrame(nextTextureId);
+        showFilter.drawFrame(nextTextureId);*/
 
 
        /* GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
@@ -190,9 +191,15 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         //mShow.draw();
     }
 
-    public static native int onNativeCreate();
+    public static native void nativeInit();
+
+    public static native int onNativeCreate(String vertexShader, String fragmentShader);
 
     public static native void onNativeDraw();
 
     public static native void onNativeSurfaceChanged(int width, int height);
+
+    public static native void setVideoSize(int videoWidth, int videoHeight);
+
+    public static native void setMSTMatrix(float[] mSTMatrix);
 }

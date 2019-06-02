@@ -3,7 +3,9 @@
 
 # Sets the minimum version of CMake required to build the native library.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.6.0)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+AUX_SOURCE_DIRECTORY(cpp SRC)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -17,7 +19,14 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
+             src/main/cpp/native-lib.cpp
+             src/main/cpp/common/AndroidLog.h
+             src/main/cpp/Matrix.h
+             src/main/cpp/Matrix.cpp
+             src/main/cpp/filter/OESFilter.h
+             src/main/cpp/filter/OESFilter.cpp
+             src/main/cpp/filter/ShowFilter.h
+             src/main/cpp/filter/ShowFilter.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -38,7 +47,10 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
                        native-lib
-
+                       android
+                       log
+                       EGL
+                       GLESv3
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )
