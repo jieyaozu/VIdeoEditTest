@@ -22,7 +22,7 @@ const std::string kGaussianPassVertexShader = SHADER_TO_STRING(
         mat4 uSTMatrix;
 
         // 高斯算子左右偏移值，当偏移值为2时，高斯算子为5 x 5
-        const int SHIFT_SIZE = 8;
+        const int SHIFT_SIZE = 15;
         uniform
         highp float texelWidthOffset;
         uniform
@@ -51,7 +51,7 @@ const std::string kGaussianPassFragmentShader = "#extension GL_OES_EGL_image_ext
         "uniform sampler2D sTexture;\n"
         "uniform bool isVertical;\n"
         "// 高斯算子左右偏移值，当偏移值为2时，高斯算子为5 x 5\n"
-        "const int SHIFT_SIZE = 8;\n"
+        "const int SHIFT_SIZE = 15;\n"
         "varying vec4 blurShiftCoordinates[SHIFT_SIZE];\n"
         "void main() {\n"
         "\n"

@@ -145,6 +145,11 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        onNativeDraw();
+        drawFrameCount();
+        if (onFpsCallback != null) {
+            onFpsCallback.onFpsCallback(getFPS());
+        }
         //GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         surfaceTexture.updateTexImage();
         surfaceTexture.getTransformMatrix(mSTMatrix);
@@ -202,4 +207,54 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     public static native void setVideoSize(int videoWidth, int videoHeight);
 
     public static native void setMSTMatrix(float[] mSTMatrix);
+    //计算帧率
+    /**
+     * 计算绘制帧数据
+     */
+    public void drawFrameCount() {
+        long currentTime = System.currentTimeMillis();
+        if (mUpdateTime == 0) {
+            mUpdateTime = currentTime;
+        }
+        if ((currentTime - mUpdateTime) > TIMETRAVEL_MS) {
+            mCurrentFps = ((float) mTimes / (currentTime - mUpdateTime)) * 1000.0f;
+            mUpdateTime = currentTime;
+            mTimes = 0;
+        }
+        mTimes++;
+    }
+
+    private static final long TIMETRAVEL = 1;
+    private static final long TIMETRAVEL_MS = TIMETRAVEL * 1000;
+    private static final long TIMETRAVEL_MAX_DIVIDE = 2 * TIMETRAVEL_MS;
+    private int mTimes;
+    private float mCurrentFps;
+    private long mUpdateTime;
+
+    /**
+     * 获取FPS
+     *
+     * @return
+     */
+    public float getFPS() {
+        if ((System.currentTimeMillis() - mUpdateTime) > TIMETRAVEL_MAX_DIVIDE) {
+            return 0;
+        } else {
+            return mCurrentFps;
+        }
+    }
+
+    private OnFpsCallback onFpsCallback;
+
+    public OnFpsCallback getOnFpsCallback() {
+        return onFpsCallback;
+    }
+
+    public void setOnFpsCallback(OnFpsCallback onFpsCallback) {
+        this.onFpsCallback = onFpsCallback;
+    }
+
+    public interface OnFpsCallback {
+        void onFpsCallback(float fps);
+    }
 }
