@@ -150,20 +150,14 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         if (onFpsCallback != null) {
             onFpsCallback.onFpsCallback(getFPS());
         }
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         surfaceTexture.updateTexImage();
         surfaceTexture.getTransformMatrix(mSTMatrix);
-
-        GLES20.glViewport(0, 0, screenWidth, screenHeight);
 
         oesFilter.setmSTMatrix(mSTMatrix);
         int nextTextureId = oesFilter.drawFrameBuffer(textureId);
 
         blurFilter.setmSTMatrix(mSTMatrix);
         nextTextureId = blurFilter.drawFrameBuffer(nextTextureId);
-
-        //centerFilter.setmSTMatrix(mSTMatrix);
-        //nextTextureId = centerFilter.drawFrameBuffer(nextTextureId);
 
         showFilter.setmSTMatrix(mSTMatrix);
         showFilter.drawFrame(nextTextureId);

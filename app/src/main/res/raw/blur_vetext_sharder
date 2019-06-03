@@ -5,7 +5,7 @@ uniform mat4 uMatrix;
 uniform mat4 uSTMatrix;
 
 // 高斯算子左右偏移值，当偏移值为2时，高斯算子为5 x 5
-const int SHIFT_SIZE = 15;
+const int SHIFT_SIZE = 10;
 uniform highp float texelWidthOffset;
 uniform highp float texelHeightOffset;
 

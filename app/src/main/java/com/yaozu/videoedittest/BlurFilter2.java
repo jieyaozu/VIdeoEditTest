@@ -93,16 +93,16 @@ public class BlurFilter2 extends OESFilter {
         GLES30.glUseProgram(programId);
         isVertical = true;
         boolean first = true;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
             index = i;
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBUFFERS[0]);
             GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                     GLES20.GL_TEXTURE_2D, FBUFFERTEXTURE[index % 2], 0);
             if (isVertical) {
                 GLES20.glUniform1f(texelWidthOffsetHandle, 0);
-                GLES20.glUniform1f(texelHeightOffsetHandle, 18f / viewHeight);
+                GLES20.glUniform1f(texelHeightOffsetHandle, 15f / viewHeight);
             } else {
-                GLES20.glUniform1f(texelWidthOffsetHandle, 18f / viewWidth);
+                GLES20.glUniform1f(texelWidthOffsetHandle, 15f / viewWidth);
                 GLES20.glUniform1f(texelHeightOffsetHandle, 0);
             }
             if (first) {
