@@ -7,14 +7,7 @@ uniform bool isVertical;
 const int SHIFT_SIZE = 15;
 varying vec4 blurShiftCoordinates[SHIFT_SIZE];
 void main() {
-        //gl_FragColor=texture2D(sTexture, vTexCoord);
 
-        //下面是黑白效果
-        //vec3 centralColor = texture2D(sTexture, vTexCoord).rgb;
-        //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
-
-        //模糊效果
-        vec2 tex_offset = vec2(1.0/300.0,1.0/300.0);
         vec4 centralColor = texture2D(sTexture, vTexCoord);
         mediump vec3 sum = centralColor.rgb;
         // 计算偏移坐标的颜色值总和
@@ -25,7 +18,4 @@ void main() {
 
         // 求出平均值
         gl_FragColor = vec4(sum * 1.0 / float(2 * SHIFT_SIZE + 1), centralColor.a);
-
-
-        //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b+0.0*centralColor.a);
 }

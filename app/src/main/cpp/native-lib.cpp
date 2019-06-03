@@ -7,6 +7,7 @@
 #include "Matrix.h"
 #include "filter/OESFilter.h"
 #include "filter/ShowFilter.h"
+#include "filter/BlurFilter.h"
 
 #define TAG    "myhello-jni-test" // 这个是自定义的LOG的标识
 #define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__) // 定义LOGD类型
@@ -17,6 +18,7 @@ extern "C"
 
 OESFilter *oesFilter;
 ShowFilter *showFilter;
+BlurFilter *blurFilter;
 
 unsigned int texture;
 
@@ -25,6 +27,7 @@ Java_com_yaozu_videoedittest_VideoPreviewView_nativeInit(JNIEnv *env, jobject ty
 
     oesFilter = new OESFilter();
     showFilter = new ShowFilter();
+    blurFilter = new BlurFilter();
 }
 
 JNIEXPORT jint JNICALL
@@ -43,6 +46,7 @@ Java_com_yaozu_videoedittest_VideoPreviewView_onNativeCreate(JNIEnv *env, jobjec
     const char *cFragment = env->GetStringUTFChars(fragment, nullptr);
     oesFilter->initProgram();
     showFilter->initProgram();
+    blurFilter->initProgram();
     return texture;
 }
 
@@ -50,6 +54,7 @@ JNIEXPORT void JNICALL
 Java_com_yaozu_videoedittest_VideoPreviewView_onNativeDraw(JNIEnv *env, jobject type) {
     //LOGD("##########====> %s", "onNativeDraw");
     int nextTextureid = oesFilter->drawFrameBuffer(texture);
+    nextTextureid = blurFilter->drawFrameBuffer(nextTextureid);
     showFilter->drawFrame(nextTextureid);
     //oesFilter->drawFrame(texture);
 }
@@ -59,10 +64,14 @@ Java_com_yaozu_videoedittest_VideoPreviewView_onNativeSurfaceChanged(JNIEnv *env
                                                                      jint width, jint height) {
 
     //LOGD("##########====> %s%d%d", "onNativeSurfaceChanged", width, height);
+    //width = width/2;
+    //height = height/2;
     oesFilter->onSurfaceChanged(width, height);
     oesFilter->initFrameBuffer();
     showFilter->onSurfaceChanged(width, height);
     showFilter->initFrameBuffer();
+    blurFilter->onSurfaceChanged(width, height);
+    blurFilter->initFrameBuffer();
 }
 
 JNIEXPORT void JNICALL
@@ -72,6 +81,7 @@ Java_com_yaozu_videoedittest_VideoPreviewView_setVideoSize(JNIEnv *env, jobject 
     // TODO
     oesFilter->setVideoSize(videoWidth, videoHeight);
     showFilter->setVideoSize(videoWidth, videoHeight);
+    blurFilter->setVideoSize(videoWidth, videoHeight);
 }
 
 JNIEXPORT void JNICALL
@@ -80,6 +90,7 @@ Java_com_yaozu_videoedittest_VideoPreviewView_setMSTMatrix(JNIEnv *env, jobject 
     jfloat *sTMatrix = env->GetFloatArrayElements(mSTMatrix_, NULL);
     oesFilter->setMSTMatrix(sTMatrix);
     showFilter->setMSTMatrix(sTMatrix);
+    blurFilter->setMSTMatrix(sTMatrix);
     env->ReleaseFloatArrayElements(mSTMatrix_, sTMatrix, 0);
 }
 
