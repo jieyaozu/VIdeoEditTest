@@ -16,6 +16,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     private VideoPreviewView videoPreviewView;
+    private TextView tvFps;
     private int REQUEST_VIDEO_CODE = 1100;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -47,6 +48,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         videoPreviewView = findViewById(R.id.video_view);
+        tvFps = findViewById(R.id.show_fps);
+        videoPreviewView.setOnFpsCallback(new VideoPreviewView.OnFpsCallback() {
+            @Override
+            public void onFpsCallback(final float fps) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvFps.setText("fps = " + fps);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -60,4 +73,6 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
 }
