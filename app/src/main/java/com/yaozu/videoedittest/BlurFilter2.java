@@ -6,10 +6,11 @@ import android.opengl.GLES30;
 import android.util.Log;
 
 public class BlurFilter2 extends OESFilter {
-    private int texelWidthOffsetHandle;
-    private int texelHeightOffsetHandle;
+    private int pixoffSetXPosition;
+    private int pixoffSetYPosition;
+    private int isVerticalPosition;
 
-    protected boolean isVertical = true;
+    protected boolean isVertical = false;
 
     protected int[] fbuffer = new int[2];
     protected int[] ftextbuffer = new int[2];
@@ -23,8 +24,9 @@ public class BlurFilter2 extends OESFilter {
         String vertexShader = ShaderUtils.readRawTextFile(context, R.raw.blur_vetext_sharder);
         String fragmentShader = ShaderUtils.readRawTextFile(context, R.raw.blur_fragment_sharder);
         programId = ShaderUtils.uCreateGlProgram(vertexShader, fragmentShader);
-        texelWidthOffsetHandle = GLES20.glGetUniformLocation(programId, "texelWidthOffset");
-        texelHeightOffsetHandle = GLES20.glGetUniformLocation(programId, "texelHeightOffset");
+        pixoffSetXPosition = GLES20.glGetUniformLocation(programId, "pixoffSetX");
+        pixoffSetYPosition = GLES20.glGetUniformLocation(programId, "pixoffSetY");
+        isVerticalPosition = GLES20.glGetUniformLocation(programId, "isVertical");
     }
 
     public void setVideoSize(int videoWidth, int videoHeight) {
@@ -91,26 +93,26 @@ public class BlurFilter2 extends OESFilter {
         GLES30.glViewport(0, 0, viewWidth, viewHeight);
         // 使用当前的program
         GLES30.glUseProgram(programId);
-        isVertical = true;
+        isVertical = false;
         boolean first = true;
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             index = i;
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBUFFERS[0]);
             GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                     GLES20.GL_TEXTURE_2D, FBUFFERTEXTURE[index % 2], 0);
             if (isVertical) {
-                GLES20.glUniform1f(texelWidthOffsetHandle, 0);
-                GLES20.glUniform1f(texelHeightOffsetHandle, 15f / viewHeight);
+                GLES20.glUniform1i(isVerticalPosition, 1);
+                GLES20.glUniform1f(pixoffSetXPosition, 0);
+                GLES20.glUniform1f(pixoffSetYPosition, 8f / viewHeight);
             } else {
-                GLES20.glUniform1f(texelWidthOffsetHandle, 15f / viewWidth);
-                GLES20.glUniform1f(texelHeightOffsetHandle, 0);
+                GLES20.glUniform1i(isVerticalPosition, 0);
+                GLES20.glUniform1f(pixoffSetXPosition, 8f / viewWidth);
+                GLES20.glUniform1f(pixoffSetYPosition, 0);
             }
             if (first) {
-                //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
                 onDrawBlurTextTure(textureId, vertexBuffer, textureVertexBuffer);
             } else {
                 onDrawBlurTextTure(FBUFFERTEXTURE[(index - 1) % 2], vertexBuffer, textureVertexBuffer);
-                //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, FBUFFERTEXTURE[(index - 1) % 2]);
             }
             first = false;
             // 运行延时任务，这个要放在glUseProgram之后，要不然某些设置项会不生效

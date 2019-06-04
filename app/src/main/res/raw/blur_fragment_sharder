@@ -4,8 +4,10 @@ varying vec2 vTexCoord;
 uniform sampler2D sTexture;
 uniform bool isVertical;
 // 高斯算子左右偏移值，当偏移值为2时，高斯算子为5 x 5
-const int SHIFT_SIZE = 10;
-varying vec4 blurShiftCoordinates[SHIFT_SIZE];
+const int SHIFT_SIZE = 20;
+uniform highp float pixoffSetX;
+uniform highp float pixoffSetY;
+
 void main() {
         //gl_FragColor=texture2D(sTexture, vTexCoord);
 
@@ -14,18 +16,27 @@ void main() {
         //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
 
         //模糊效果
-        vec2 tex_offset = vec2(1.0/300.0,1.0/300.0);
         vec4 centralColor = texture2D(sTexture, vTexCoord);
-        mediump vec3 sum = centralColor.rgb;
-        // 计算偏移坐标的颜色值总和
-        for (int i = 0; i < SHIFT_SIZE; i++) {
-            sum += texture2D(sTexture, blurShiftCoordinates[i].xy).rgb;
-            sum += texture2D(sTexture, blurShiftCoordinates[i].zw).rgb;
+
+        mediump vec3 sumColor = vec3(0.0);
+        if(!isVertical){
+            for(int x = -SHIFT_SIZE; x <= SHIFT_SIZE; x+=2) {
+                float valuex = vTexCoord.x + float(x)*pixoffSetX;
+                if(valuex < float(-1) || valuex > float(1)){
+                   //valuex = vTexCoord.x - float(x)*pixoffSetX;
+                }
+                float valuey = vTexCoord.y;
+                sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
+            }
+        } else {
+            for(int y = -SHIFT_SIZE; y <= SHIFT_SIZE; y+=2){
+                float valuex = vTexCoord.x;
+                float valuey = vTexCoord.y + float(y)*pixoffSetY;
+                if(valuey < float(-1) || valuey > float(1)){
+                   //valuey = vTexCoord.y - float(y)*pixoffSetY;
+                }
+                sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
+            }
         }
-
-        // 求出平均值
-        gl_FragColor = vec4(sum * 1.0 / float(2 * SHIFT_SIZE + 1), centralColor.a);
-
-
-        //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b+0.0*centralColor.a);
+        gl_FragColor = vec4(sumColor * 1.0 / float(SHIFT_SIZE + 1), centralColor.a);
 }

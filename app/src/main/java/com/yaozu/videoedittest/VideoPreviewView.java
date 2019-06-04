@@ -32,7 +32,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     private OESFilter oesFilter;
     private BlurFilter2 blurFilter;
-    private CenterFilter centerFilter;
     private ShowFilter showFilter;
     private WaterMarkFilter waterFilter;
     private float[] mSTMatrix = new float[16];
@@ -65,14 +64,11 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
         oesFilter = new OESFilter();
         blurFilter = new BlurFilter2();
-        centerFilter = new CenterFilter();
         showFilter = new ShowFilter();
         waterFilter = new WaterMarkFilter(context.getResources());
         mShow = new NoFilter(context.getResources());
         Bitmap mBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.watermark);
         waterFilter.setWaterMark(mBitmap);
-
-        mediaPlayer = new MediaPlayer();
     }
 
     public void setVideoPath(String paths) {
@@ -85,10 +81,13 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             videoHeight = Integer.parseInt(height);
             oesFilter.setVideoSize(videoWidth, videoHeight);
             blurFilter.setVideoSize(videoWidth, videoHeight);
-            centerFilter.setVideoSize(videoWidth, videoHeight);
             showFilter.setVideoSize(videoWidth, videoHeight);
             waterFilter.setSize(screenWidth, screenHeight, videoWidth, videoHeight);
 
+            if (mediaPlayer != null) {
+                release();
+            }
+            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(paths);
             Surface surface = new Surface(surfaceTexture);
             mediaPlayer.setSurface(surface);
@@ -105,7 +104,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         onNativeCreate();
         oesFilter.create(getContext());
         blurFilter.create(getContext());
-        centerFilter.create(getContext());
         showFilter.create(getContext());
         waterFilter.create();
         mShow.create();
@@ -139,7 +137,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         waterFilter.setSize(width, height);
         oesFilter.onSizeChange(width, height);
         blurFilter.onSizeChange(width, height);
-        centerFilter.onSizeChange(width, height);
         showFilter.onSizeChange(width, height);
     }
 
@@ -150,6 +147,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         if (onFpsCallback != null) {
             onFpsCallback.onFpsCallback(getFPS());
         }
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         surfaceTexture.updateTexImage();
         surfaceTexture.getTransformMatrix(mSTMatrix);
 
@@ -160,6 +158,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         nextTextureId = blurFilter.drawFrameBuffer(nextTextureId);
 
         showFilter.setmSTMatrix(mSTMatrix);
+        showFilter.setCenterTextureId(textureId);
         showFilter.drawFrame(nextTextureId);
 
 
@@ -244,5 +243,25 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     public interface OnFpsCallback {
         void onFpsCallback(float fps);
+    }
+
+    public void release() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    public void pause() {
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+        }
+    }
+
+    public void start() {
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+        }
     }
 }

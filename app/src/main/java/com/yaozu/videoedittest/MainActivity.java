@@ -74,5 +74,21 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        videoPreviewView.pause();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoPreviewView.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        videoPreviewView.release();
+    }
 }

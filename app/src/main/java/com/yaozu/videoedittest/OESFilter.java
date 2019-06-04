@@ -158,8 +158,8 @@ public class OESFilter {
     }
 
     public void drawFrame(int textureId) {
-        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        /*GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);*/
         GLES20.glViewport(0, 0, viewWidth, viewHeight);
         GLES20.glUseProgram(programId);
         runPendingOnDrawTasks();
