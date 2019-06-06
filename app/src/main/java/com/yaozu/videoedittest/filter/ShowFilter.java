@@ -73,7 +73,7 @@ public class ShowFilter extends OESFilter {
     @Override
     public void drawFrame(int textureId) {
         super.drawFrame(textureId);
-        mCenterFilter.drawFrame(centerTextureId);
+        //mCenterFilter.drawFrame(centerTextureId);
     }
 
 

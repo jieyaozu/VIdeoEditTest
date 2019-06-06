@@ -45,6 +45,7 @@ public class BlurFilter2 extends OESFilter {
         calculateRaidusWH();
     }
 
+    //计算用来求模糊半径的宽高
     private void calculateRaidusWH() {
         float scale = (float) viewWidth / (float) viewHeight;
         float videoScale = (float) videoWidth / (float) videoHeight;
@@ -54,6 +55,13 @@ public class BlurFilter2 extends OESFilter {
         } else if (videoScale < scale) {
             radiusWidth = videoWidth;
             radiusHeight = (int) (radiusWidth / scale);
+        }
+        //宽高保持在一定的比例之中
+        if (radiusWidth * radiusHeight > 200000) {
+            float s = 200000.0f / (radiusWidth * radiusHeight);
+            s = (float) Math.sqrt(s);
+            radiusHeight = (int) (s * radiusHeight);
+            radiusWidth = (int) (s * radiusWidth);
         }
     }
 

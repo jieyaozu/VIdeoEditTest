@@ -156,31 +156,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         showFilter.setmSTMatrix(mSTMatrix);
         showFilter.setCenterTextureId(textureId);
         showFilter.drawFrame(nextTextureId);
-
-
-       /* GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-                GLES20.GL_TEXTURE_2D, fTexture[0], 0);
-        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
-                GLES20.GL_RENDERBUFFER, fRender[0]);
-        blurFilter.setmSTMatrix(mSTMatrix);
-        blurFilter.draw();
-        unBindFrame();
-
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-                GLES20.GL_TEXTURE_2D, fTexture[1], 0);
-        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
-                GLES20.GL_RENDERBUFFER, fRender[0]);
-        waterFilter.setTextureId(fTexture[0]);
-        waterFilter.draw();
-        unBindFrame();
-        */
-        //waterFilter.setTextureId(textureId);
-        //waterFilter.draw();
-
-        //mShow.setTextureId(textureId);
-        //mShow.draw();
     }
 
     public static native int onNativeCreate();
