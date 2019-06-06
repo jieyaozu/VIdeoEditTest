@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/text_line_text"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:drawablePadding="10dp"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:singleLine="true"
+        android:text="新建计划"
+        android:textColor="#363636"
+        android:textSize="15dp" />
+</LinearLayout>

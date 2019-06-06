@@ -16,6 +16,13 @@
         android:text="fps = "
         android:textColor="@color/colorAccent" />
 
+    <Spinner
+        android:id="@+id/switch_blur_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/show_fps"
+        android:padding="15dp" />
+
     <Button
         android:id="@+id/sample_text"
         android:layout_width="wrap_content"

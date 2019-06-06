@@ -33,7 +33,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     private OESFilter oesFilter;
     private BlurFilter2 blurFilter;
     private ShowFilter showFilter;
-    private WaterMarkFilter waterFilter;
     private float[] mSTMatrix = new float[16];
 
     private int screenWidth, screenHeight;
@@ -65,10 +64,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         oesFilter = new OESFilter();
         blurFilter = new BlurFilter2();
         showFilter = new ShowFilter();
-        waterFilter = new WaterMarkFilter(context.getResources());
         mShow = new NoFilter(context.getResources());
-        Bitmap mBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.watermark);
-        waterFilter.setWaterMark(mBitmap);
     }
 
     public void setVideoPath(String paths) {
@@ -82,7 +78,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             oesFilter.setVideoSize(videoWidth, videoHeight);
             blurFilter.setVideoSize(videoWidth, videoHeight);
             showFilter.setVideoSize(videoWidth, videoHeight);
-            waterFilter.setSize(screenWidth, screenHeight, videoWidth, videoHeight);
 
             if (mediaPlayer != null) {
                 release();
@@ -105,7 +100,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         oesFilter.create(getContext());
         blurFilter.create(getContext());
         showFilter.create(getContext());
-        waterFilter.create();
         mShow.create();
         //启用透明
         GLES20.glEnable(GLES20.GL_BLEND);
@@ -134,7 +128,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         onNativeSurfaceChanged(width, height);
         screenWidth = width;
         screenHeight = height;
-        waterFilter.setSize(width, height);
         oesFilter.onSizeChange(width, height);
         blurFilter.onSizeChange(width, height);
         showFilter.onSizeChange(width, height);
@@ -262,6 +255,12 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     public void start() {
         if (mediaPlayer != null) {
             mediaPlayer.start();
+        }
+    }
+
+    public void setBlurLevel(float level) {
+        if (blurFilter != null) {
+            blurFilter.setBlurLevel(level);
         }
     }
 }

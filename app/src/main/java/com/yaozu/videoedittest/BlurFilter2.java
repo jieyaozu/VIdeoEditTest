@@ -9,11 +9,14 @@ public class BlurFilter2 extends OESFilter {
     private int pixoffSetXPosition;
     private int pixoffSetYPosition;
     private int isVerticalPosition;
+    private int blurLevelPosition;
 
     protected boolean isVertical = false;
 
     protected int[] fbuffer = new int[2];
     protected int[] ftextbuffer = new int[2];
+
+    private float blurLevel = 2f;
 
     public BlurFilter2() {
         super();
@@ -27,6 +30,7 @@ public class BlurFilter2 extends OESFilter {
         pixoffSetXPosition = GLES20.glGetUniformLocation(programId, "pixoffSetX");
         pixoffSetYPosition = GLES20.glGetUniformLocation(programId, "pixoffSetY");
         isVerticalPosition = GLES20.glGetUniformLocation(programId, "isVertical");
+        blurLevelPosition = GLES20.glGetUniformLocation(programId, "blurLevel");
     }
 
     public void setVideoSize(int videoWidth, int videoHeight) {
@@ -103,11 +107,13 @@ public class BlurFilter2 extends OESFilter {
             if (isVertical) {
                 GLES20.glUniform1i(isVerticalPosition, 1);
                 GLES20.glUniform1f(pixoffSetXPosition, 0);
-                GLES20.glUniform1f(pixoffSetYPosition, 8f / viewHeight);
+                GLES20.glUniform1f(pixoffSetYPosition, blurLevel / viewHeight);
+                GLES20.glUniform1f(blurLevelPosition, blurLevel);
             } else {
                 GLES20.glUniform1i(isVerticalPosition, 0);
-                GLES20.glUniform1f(pixoffSetXPosition, 8f / viewWidth);
+                GLES20.glUniform1f(pixoffSetXPosition, blurLevel / viewWidth);
                 GLES20.glUniform1f(pixoffSetYPosition, 0);
+                GLES20.glUniform1f(blurLevelPosition, blurLevel);
             }
             if (first) {
                 onDrawBlurTextTure(textureId, vertexBuffer, textureVertexBuffer);
@@ -122,5 +128,9 @@ public class BlurFilter2 extends OESFilter {
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
 
         return FBUFFERTEXTURE[index % 2];
+    }
+
+    public void setBlurLevel(float level) {
+        this.blurLevel = level;
     }
 }
