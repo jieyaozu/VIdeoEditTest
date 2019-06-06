@@ -77,17 +77,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSpinnerData() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             BlurLevel level = new BlurLevel();
             if (i == 0) {
-                level.setLevel(2);
+                level.setLevel(1);
+                level.setRadius(0.7f);
                 level.setLevelName("一级");
             } else if (i == 1) {
-                level.setLevel(4);
+                level.setLevel(2);
+                level.setRadius(1.1f);
                 level.setLevelName("二级");
             } else if (i == 2) {
-                level.setLevel(8);
+                level.setLevel(3);
+                level.setRadius(2.2f);
                 level.setLevelName("三级");
+            } else if (i == 3) {
+                level.setLevel(4);
+                level.setRadius(2.2f);
+                level.setLevelName("四级");
             }
             levelList.add(level);
         }
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (videoPreviewView != null) {
-                    videoPreviewView.setBlurLevel(levelList.get(position).getLevel());
+                    videoPreviewView.setBlurLevel(levelList.get(position));
                 }
             }
 

@@ -5,6 +5,8 @@ import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.util.Log;
 
+import com.yaozu.videoedittest.mode.BlurLevel;
+
 public class BlurFilter2 extends OESFilter {
     private int pixoffSetXPosition;
     private int pixoffSetYPosition;
@@ -16,7 +18,11 @@ public class BlurFilter2 extends OESFilter {
     protected int[] fbuffer = new int[2];
     protected int[] ftextbuffer = new int[2];
 
-    private float blurLevel = 2f;
+    private BlurLevel blurLevel = new BlurLevel();
+
+    //用来计算模糊半径的宽高
+    private int radiusWidth;
+    private int radiusHeight;
 
     public BlurFilter2() {
         super();
@@ -36,6 +42,19 @@ public class BlurFilter2 extends OESFilter {
     public void setVideoSize(int videoWidth, int videoHeight) {
         this.videoWidth = videoWidth;
         this.videoHeight = videoHeight;
+        calculateRaidusWH();
+    }
+
+    private void calculateRaidusWH() {
+        float scale = (float) viewWidth / (float) viewHeight;
+        float videoScale = (float) videoWidth / (float) videoHeight;
+        if (videoScale >= scale) {
+            radiusHeight = videoHeight;
+            radiusWidth = (int) (radiusHeight * scale);
+        } else if (videoScale < scale) {
+            radiusWidth = videoWidth;
+            radiusHeight = (int) (radiusWidth / scale);
+        }
     }
 
     public void onSizeChange(final int width, final int height) {
@@ -107,13 +126,13 @@ public class BlurFilter2 extends OESFilter {
             if (isVertical) {
                 GLES20.glUniform1i(isVerticalPosition, 1);
                 GLES20.glUniform1f(pixoffSetXPosition, 0);
-                GLES20.glUniform1f(pixoffSetYPosition, blurLevel / viewHeight);
-                GLES20.glUniform1f(blurLevelPosition, blurLevel);
+                GLES20.glUniform1f(pixoffSetYPosition, blurLevel.getRadius() / radiusHeight);
+                GLES20.glUniform1f(blurLevelPosition, blurLevel.getLevel());
             } else {
                 GLES20.glUniform1i(isVerticalPosition, 0);
-                GLES20.glUniform1f(pixoffSetXPosition, blurLevel / viewWidth);
+                GLES20.glUniform1f(pixoffSetXPosition, blurLevel.getRadius() / radiusWidth);
                 GLES20.glUniform1f(pixoffSetYPosition, 0);
-                GLES20.glUniform1f(blurLevelPosition, blurLevel);
+                GLES20.glUniform1f(blurLevelPosition, blurLevel.getLevel());
             }
             if (first) {
                 onDrawBlurTextTure(textureId, vertexBuffer, textureVertexBuffer);
@@ -130,7 +149,7 @@ public class BlurFilter2 extends OESFilter {
         return FBUFFERTEXTURE[index % 2];
     }
 
-    public void setBlurLevel(float level) {
+    public void setBlurLevel(BlurLevel level) {
         this.blurLevel = level;
     }
 }

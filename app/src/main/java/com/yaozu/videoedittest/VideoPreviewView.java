@@ -16,6 +16,7 @@ import android.view.Surface;
 import com.yaozu.videoedittest.filter.NoFilter;
 import com.yaozu.videoedittest.filter.ShowFilter;
 import com.yaozu.videoedittest.filter.WaterMarkFilter;
+import com.yaozu.videoedittest.mode.BlurLevel;
 
 import java.io.IOException;
 
@@ -57,7 +58,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     private void init(Context context) {
         setEGLContextClientVersion(2);
         setRenderer(this);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        //setRenderMode(RENDERMODE_WHEN_DIRTY);
         setPreserveEGLContextOnPause(false);
         setCameraDistance(100);
 
@@ -117,7 +118,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
             @Override
             public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-                requestRender();
+                //requestRender();
             }
         });
         GLES30.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
@@ -128,6 +129,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         onNativeSurfaceChanged(width, height);
         screenWidth = width;
         screenHeight = height;
+        width = width / 2;
+        height = height / 2;
         oesFilter.onSizeChange(width, height);
         blurFilter.onSizeChange(width, height);
         showFilter.onSizeChange(width, height);
@@ -258,7 +261,7 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         }
     }
 
-    public void setBlurLevel(float level) {
+    public void setBlurLevel(BlurLevel level) {
         if (blurFilter != null) {
             blurFilter.setBlurLevel(level);
         }

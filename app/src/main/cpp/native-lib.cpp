@@ -18,7 +18,7 @@ Java_com_yaozu_videoedittest_VideoPreviewView_onNativeCreate(JNIEnv *env, jobjec
 
 JNIEXPORT void JNICALL
 Java_com_yaozu_videoedittest_VideoPreviewView_onNativeDraw(JNIEnv *env, jobject type) {
-    LOGD("##########====> %s", "onNativeDraw");
+    //LOGD("##########====> %s", "onNativeDraw");
 }
 
 JNIEXPORT void JNICALL

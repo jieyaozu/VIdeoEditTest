@@ -16,11 +16,13 @@ void main() {
         //vec3 centralColor = texture2D(sTexture, vTexCoord).rgb;
         //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
 
-        if(blurLevel >= float(8)){
+        if(blurLevel >= float(4)){
+          SHIFT_SIZE = 35;
+        }else if(blurLevel >= float(3)){
            SHIFT_SIZE = 20;
-        }else if(blurLevel >= float(4)){
-           SHIFT_SIZE = 15;
         }else if(blurLevel >= float(2)){
+           SHIFT_SIZE = 15;
+        }else if(blurLevel >= float(1)){
            SHIFT_SIZE = 10;
         } else {
            SHIFT_SIZE = 5;
