@@ -39,8 +39,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     private int screenWidth, screenHeight;
     private int videoWidth, videoHeight;
 
-    private NoFilter mShow;
-
     static {
         System.loadLibrary("native-lib");
     }
@@ -65,7 +63,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         oesFilter = new OESFilter();
         blurFilter = new BlurFilter2();
         showFilter = new ShowFilter();
-        mShow = new NoFilter(context.getResources());
     }
 
     public void setVideoPath(String paths) {
@@ -101,7 +98,6 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         oesFilter.create(getContext());
         blurFilter.create(getContext());
         showFilter.create(getContext());
-        mShow.create();
         //启用透明
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -143,19 +139,21 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         if (onFpsCallback != null) {
             onFpsCallback.onFpsCallback(getFPS());
         }
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        surfaceTexture.updateTexImage();
-        surfaceTexture.getTransformMatrix(mSTMatrix);
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            surfaceTexture.updateTexImage();
+            surfaceTexture.getTransformMatrix(mSTMatrix);
 
-        oesFilter.setmSTMatrix(mSTMatrix);
-        int nextTextureId = oesFilter.drawFrameBuffer(textureId);
+            oesFilter.setmSTMatrix(mSTMatrix);
+            int nextTextureId = oesFilter.drawFrameBuffer(textureId);
 
-        blurFilter.setmSTMatrix(mSTMatrix);
-        nextTextureId = blurFilter.drawFrameBuffer(nextTextureId);
+            blurFilter.setmSTMatrix(mSTMatrix);
+            nextTextureId = blurFilter.drawFrameBuffer(nextTextureId);
 
-        showFilter.setmSTMatrix(mSTMatrix);
-        showFilter.setCenterTextureId(textureId);
-        showFilter.drawFrame(nextTextureId);
+            showFilter.setmSTMatrix(mSTMatrix);
+            showFilter.setCenterTextureId(textureId);
+            showFilter.drawFrame(nextTextureId);
+        }
     }
 
     public static native int onNativeCreate();
