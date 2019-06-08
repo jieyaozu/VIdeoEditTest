@@ -31,4 +31,13 @@
         android:text="Hello World!"
         android:textColor="@color/colorAccent" />
 
+    <Button
+        android:id="@+id/sample_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/sample_text"
+        android:text="保存视频"
+        android:textColor="@color/colorAccent" />
+
 </RelativeLayout>

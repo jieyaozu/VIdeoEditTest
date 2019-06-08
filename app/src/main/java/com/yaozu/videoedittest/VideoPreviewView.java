@@ -222,6 +222,12 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         }
     }
 
+    public void releaseSurfaceTexture() {
+        if (surfaceTexture != null) {
+            surfaceTexture.release();
+        }
+    }
+
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
@@ -232,6 +238,13 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         if (mediaPlayer != null) {
             mediaPlayer.start();
         }
+    }
+
+    public int getDuration() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getDuration();
+        }
+        return 0;
     }
 
     public void setBlurLevel(BlurLevel level) {

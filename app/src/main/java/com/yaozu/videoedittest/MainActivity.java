@@ -6,8 +6,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +19,17 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.yaozu.videoedittest.mediacodec.VideoClipper;
 import com.yaozu.videoedittest.mode.BlurLevel;
+import com.yaozu.videoedittest.utils.Constants;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private VideoPreviewView videoPreviewView;
@@ -30,6 +38,35 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spinner;
     private List<BlurLevel> levelList = new ArrayList<>();
     private SpinnerAdapter spinnerAdapter;
+    private Button btSave;
+    private String videoPath;
+
+    private BlurLevel currentBlurLevel;
+    private String outputPath;
+    static final int VIDEO_PREPARE = 0;
+    static final int VIDEO_START = 1;
+    static final int VIDEO_UPDATE = 2;
+    static final int VIDEO_PAUSE = 3;
+    static final int VIDEO_CUT_FINISH = 4;
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case VIDEO_CUT_FINISH:
+                    Toast.makeText(MainActivity.this, "视频保存地址   " + outputPath, Toast.LENGTH_SHORT).show();
+                    updatePhotoMedia(new File(outputPath));
+                    break;
+            }
+        }
+    };
+
+    //更新图库
+    private void updatePhotoMedia(File file) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(file));
+        sendBroadcast(intent);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -48,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
         // Example of a call to a native method
         Button button = findViewById(R.id.sample_text);
+        btSave = findViewById(R.id.sample_save);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +94,29 @@ public class MainActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(intent, REQUEST_VIDEO_CODE);
+            }
+        });
+        btSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoPreviewView.pause();
+                VideoClipper clipper = new VideoClipper(MainActivity.this);
+                clipper.setInputVideoPath(videoPath);
+                clipper.setBlurLevel(currentBlurLevel);
+                outputPath = Constants.getPath("video/clip/", System.currentTimeMillis() + ".mp4");
+                clipper.setOutputVideoPath(outputPath);
+                clipper.setOnVideoCutFinishListener(new VideoClipper.OnVideoCutFinishListener() {
+                    @Override
+                    public void onFinish() {
+                        mHandler.sendEmptyMessage(VIDEO_CUT_FINISH);
+                    }
+                });
+                try {
+                    Log.e("hero", "-----PreviewActivity---clipVideo");
+                    clipper.clipVideo(0, videoPreviewView.getDuration() * 1000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -98,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             }
             levelList.add(level);
         }
+        currentBlurLevel = levelList.get(0);
         spinnerAdapter = new SpinnerAdapter();
         spinner.setAdapter(spinnerAdapter);
         spinner.setDropDownVerticalOffset(getResources().getDimensionPixelSize(R.dimen.dimen_40));
@@ -106,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (videoPreviewView != null) {
                     videoPreviewView.setBlurLevel(levelList.get(position));
+                    currentBlurLevel = levelList.get(position);
                 }
             }
 
@@ -121,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_VIDEO_CODE) {
                 Uri uri = data.getData();
-                String videoPath = FileUtil.getPath(this, uri);
+                videoPath = FileUtil.getPath(this, uri);
                 videoPreviewView.setVideoPath(videoPath);
             }
         }
@@ -144,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         videoPreviewView.release();
+        videoPreviewView.releaseSurfaceTexture();
     }
 
     class SpinnerAdapter extends BaseAdapter {

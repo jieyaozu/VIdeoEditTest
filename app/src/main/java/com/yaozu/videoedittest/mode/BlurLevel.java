@@ -2,7 +2,7 @@ package com.yaozu.videoedittest.mode;
 
 public class BlurLevel {
     private float level = 1;
-    private float radius = 2.0f;
+    private float radius = 0.7f;
     private String levelName;
 
     public float getRadius() {
