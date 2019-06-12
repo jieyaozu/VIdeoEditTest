@@ -32,7 +32,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     private MediaPlayer mediaPlayer;
 
     private OESFilter oesFilter;
-    private BlurFilter2 blurFilter;
+    private VerticalBlurFilter vBlurFilter;
+    private HorizontalBlurFilter hBlurFilter;
     private ShowFilter showFilter;
     private float[] mSTMatrix = new float[16];
 
@@ -61,7 +62,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         setCameraDistance(100);
 
         oesFilter = new OESFilter();
-        blurFilter = new BlurFilter2();
+        vBlurFilter = new VerticalBlurFilter();
+        hBlurFilter = new HorizontalBlurFilter();
         showFilter = new ShowFilter();
     }
 
@@ -74,7 +76,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             videoWidth = Integer.parseInt(width);
             videoHeight = Integer.parseInt(height);
             oesFilter.setVideoSize(videoWidth, videoHeight);
-            blurFilter.setVideoSize(videoWidth, videoHeight);
+            vBlurFilter.setVideoSize(videoWidth, videoHeight);
+            hBlurFilter.setVideoSize(videoWidth, videoHeight);
             showFilter.setVideoSize(videoWidth, videoHeight);
 
             if (mediaPlayer != null) {
@@ -96,7 +99,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         onNativeCreate();
         oesFilter.create(getContext());
-        blurFilter.create(getContext());
+        vBlurFilter.create(getContext());
+        hBlurFilter.create(getContext());
         showFilter.create(getContext());
         //启用透明
         GLES20.glEnable(GLES20.GL_BLEND);
@@ -128,7 +132,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         width = width / 2;
         height = height / 2;
         oesFilter.onSizeChange(width, height);
-        blurFilter.onSizeChange(width, height);
+        vBlurFilter.onSizeChange(width, height);
+        hBlurFilter.onSizeChange(width, height);
         showFilter.onSizeChange(width, height);
     }
 
@@ -147,8 +152,12 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             oesFilter.setmSTMatrix(mSTMatrix);
             int nextTextureId = oesFilter.drawFrameBuffer(textureId);
 
-            blurFilter.setmSTMatrix(mSTMatrix);
-            nextTextureId = blurFilter.drawFrameBuffer(nextTextureId);
+            for (int i = 0; i < 2; i++) {
+                vBlurFilter.setmSTMatrix(mSTMatrix);
+                nextTextureId = vBlurFilter.drawFrameBuffer(nextTextureId);
+                hBlurFilter.setmSTMatrix(mSTMatrix);
+                nextTextureId = hBlurFilter.drawFrameBuffer(nextTextureId);
+            }
 
             showFilter.setmSTMatrix(mSTMatrix);
             showFilter.setCenterTextureId(textureId);
@@ -248,8 +257,11 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     }
 
     public void setBlurLevel(BlurLevel level) {
-        if (blurFilter != null) {
-            blurFilter.setBlurLevel(level);
+        if (vBlurFilter != null) {
+            vBlurFilter.setBlurLevel(level);
+        }
+        if (hBlurFilter != null) {
+            hBlurFilter.setBlurLevel(level);
         }
     }
 }

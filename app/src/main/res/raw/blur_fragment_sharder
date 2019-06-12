@@ -36,19 +36,15 @@ void main() {
             for(int x = -SHIFT_SIZE; x <= SHIFT_SIZE; x+=2) {
                 float valuex = vTexCoord.x + float(x)*pixoffSetX;
                 float valuey = vTexCoord.y;
-                if(valuex >= float(0) && valuex <= float(1)){
-                   sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
-                   index++;
-                }
+                sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
+                index++;
             }
         } else {
             for(int y = -SHIFT_SIZE; y <= SHIFT_SIZE; y+=2){
                 float valuex = vTexCoord.x;
                 float valuey = vTexCoord.y + float(y)*pixoffSetY;
-                if(valuey >= float(0) && valuey <= float(1)){
-                   sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
-                   index++;
-                }
+                sumColor += texture2D(sTexture, vec2(valuex,valuey)).rgb;
+                index++;
             }
         }
         gl_FragColor = vec4(sumColor * 1.0 / float(index), centralColor.a);

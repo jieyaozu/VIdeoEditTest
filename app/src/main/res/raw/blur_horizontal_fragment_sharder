@@ -1,0 +1,34 @@
+#extension GL_OES_EGL_image_external : require
+precision mediump float;
+varying vec2 vTexCoord;
+uniform sampler2D sTexture;
+// 高斯算子左右偏移值，当偏移值为2时，高斯算子为5 x 5
+int SHIFT_SIZE = 10;
+uniform highp float pixoffSetX;
+uniform highp float pixoffSetY;
+uniform int blurLevel;
+
+void main() {
+        //gl_FragColor=texture2D(sTexture, vTexCoord);
+
+        //下面是黑白效果
+        //vec3 centralColor = texture2D(sTexture, vTexCoord).rgb;
+        //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
+
+        int level = blurLevel;
+        if(blurLevel == 4){
+           level = 6;
+        }
+        SHIFT_SIZE = 5 + level * 5;
+
+        //模糊效果
+        vec4 centralColor = texture2D(sTexture, vTexCoord);
+        mediump vec3 sumColor = vec3(0.0);
+        int index = 0;
+        for(int x = -SHIFT_SIZE; x <= 0; x+=3) {
+            sumColor += texture2D(sTexture, vec2(vTexCoord.x + float(x)*pixoffSetX, vTexCoord.y)).rgb;
+            sumColor += texture2D(sTexture, vec2(vTexCoord.x - float(x)*pixoffSetX, vTexCoord.y)).rgb;
+            index+=2;
+        }
+        gl_FragColor = vec4(sumColor * 1.0 / float(index), centralColor.a);
+}
