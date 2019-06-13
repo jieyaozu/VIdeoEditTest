@@ -16,20 +16,19 @@ void main() {
         //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
 
         int level = blurLevel;
-        if(blurLevel == 4){
-           level = 6;
-        }
         SHIFT_SIZE = 5 + level * 5;
 
         //模糊效果
         vec4 centralColor = texture2D(sTexture, vTexCoord);
         mediump vec3 sumColor = vec3(0.0);
         int index = 0;
-        for(int x = -SHIFT_SIZE; x < 0; x+=2) {
-            sumColor += texture2D(sTexture, vec2(vTexCoord.x + float(x)*pixoffSetX, vTexCoord.y)).rgb;
-            sumColor += texture2D(sTexture, vec2(vTexCoord.x - float(x)*pixoffSetX, vTexCoord.y)).rgb;
+        float unit = float (1) / float((SHIFT_SIZE + 1)*(SHIFT_SIZE + 1));
+        for(int x = -SHIFT_SIZE; x < 0; x+=1) {
+            float weight = float(SHIFT_SIZE + 1 + x) * unit;
+            sumColor += texture2D(sTexture, vec2(vTexCoord.x + float(x)*pixoffSetX, vTexCoord.y)).rgb * weight;
+            sumColor += texture2D(sTexture, vec2(vTexCoord.x - float(x)*pixoffSetX, vTexCoord.y)).rgb * weight;
             index+=2;
         }
-        sumColor += centralColor.rgb;
-        gl_FragColor = vec4(sumColor * 1.0 / float(index + 1), centralColor.a);
+        sumColor += centralColor.rgb * (float(SHIFT_SIZE + 1) * unit);
+        gl_FragColor = vec4(sumColor, centralColor.a);
 }

@@ -152,11 +152,11 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
             oesFilter.setmSTMatrix(mSTMatrix);
             int nextTextureId = oesFilter.drawFrameBuffer(textureId);
 
-            for (int i = 0; i < 2; i++) {
-                vBlurFilter.setmSTMatrix(mSTMatrix);
-                nextTextureId = vBlurFilter.drawFrameBuffer(nextTextureId);
+            for (int i = 0; i < 1; i++) {
                 hBlurFilter.setmSTMatrix(mSTMatrix);
                 nextTextureId = hBlurFilter.drawFrameBuffer(nextTextureId);
+                vBlurFilter.setmSTMatrix(mSTMatrix);
+                nextTextureId = vBlurFilter.drawFrameBuffer(nextTextureId);
             }
 
             showFilter.setmSTMatrix(mSTMatrix);

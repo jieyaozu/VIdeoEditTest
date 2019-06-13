@@ -142,19 +142,19 @@ public class MainActivity extends AppCompatActivity {
             BlurLevel level = new BlurLevel();
             if (i == 0) {
                 level.setLevel(1);
-                level.setRadius(0.7f);
+                level.setRadius(1.0f);
                 level.setLevelName("一级");
             } else if (i == 1) {
-                level.setLevel(2);
-                level.setRadius(1.1f);
+                level.setLevel(1);
+                level.setRadius(2.0f);
                 level.setLevelName("二级");
             } else if (i == 2) {
-                level.setLevel(3);
-                level.setRadius(2.2f);
+                level.setLevel(1);
+                level.setRadius(8.2f);
                 level.setLevelName("三级");
             } else if (i == 3) {
-                level.setLevel(4);
-                level.setRadius(2.2f);
+                level.setLevel(1);
+                level.setRadius(15.2f);
                 level.setLevelName("四级");
             }
             levelList.add(level);
