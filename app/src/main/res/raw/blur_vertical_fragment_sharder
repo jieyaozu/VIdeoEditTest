@@ -23,12 +23,13 @@ void main() {
 
         //模糊效果
         vec4 centralColor = texture2D(sTexture, vTexCoord);
-        int index = 0;
         mediump vec3 sumColor = vec3(0.0);
-        for(int y = -SHIFT_SIZE; y <= 0; y+=2){
+        int index = 0;
+        for(int y = -SHIFT_SIZE; y < 0; y+=2){
             sumColor += texture2D(sTexture, vec2(vTexCoord.x, vTexCoord.y + float(y)*pixoffSetY)).rgb;
             sumColor += texture2D(sTexture, vec2(vTexCoord.x, vTexCoord.y - float(y)*pixoffSetY)).rgb;
             index+=2;
         }
-        gl_FragColor = vec4(sumColor * 1.0 / float(index), centralColor.a);
+        sumColor += centralColor.rgb;
+        gl_FragColor = vec4(sumColor * 1.0 / float(index + 1), centralColor.a);
 }
