@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 level.setLevelName("三级");
             } else if (i == 3) {
                 level.setLevel(4);
-                level.setRadius(4.0f);
+                level.setRadius(3.5f);
                 level.setLevelName("四级");
             }
             levelList.add(level);
