@@ -16,6 +16,9 @@ void main() {
         //gl_FragColor = vec4(0.299*centralColor.r+0.587*centralColor.g+0.114*centralColor.b);
 
         int level = blurLevel;
+        if(blurLevel == 4){
+           level = 6;
+        }
         SHIFT_SIZE = 5 + level * 5;
 
         //模糊效果

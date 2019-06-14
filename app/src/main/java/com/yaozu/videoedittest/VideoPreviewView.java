@@ -129,8 +129,8 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         onNativeSurfaceChanged(width, height);
         screenWidth = width;
         screenHeight = height;
-        width = width / 2;
-        height = height / 2;
+        //width = width / 2;
+        //height = height / 2;
         oesFilter.onSizeChange(width, height);
         vBlurFilter.onSizeChange(width, height);
         hBlurFilter.onSizeChange(width, height);
